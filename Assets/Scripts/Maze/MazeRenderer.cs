@@ -61,8 +61,8 @@ namespace BugGame
                 }
             }
 
-            var worldPos = new Vector2(transform.position.x + m_CellSize * m_currentGridPos.x, transform.position.y + m_CellSize * m_currentGridPos.y);
-            Gizmos.DrawSphere(worldPos, m_CellSize * 0.5f);
+            var prevWorldPos = new Vector2(transform.position.x + m_CellSize * m_headCellPos.x, transform.position.y + m_CellSize * m_headCellPos.y);
+            Gizmos.DrawSphere(prevWorldPos, m_CellSize * 0.5f);
         }
     }
 #endif
@@ -77,11 +77,12 @@ namespace BugGame
         [SerializeField] private float m_CellSize;
 
 
-        private Vector2Int m_currentGridPos;
+        private Vector2Int m_headCellPos;
 
+        
         private void Awake()
         {
-            MazeGenerator.OnPositionChanged += pos => m_currentGridPos = pos;
+            MazeGenerator.HeadCellPositionChanged += headCellPos => m_headCellPos = headCellPos;
         }
         
         private void DrawAt(int x, int y)

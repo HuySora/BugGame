@@ -1,7 +1,6 @@
 namespace BugGame
 {
     using System;
-    using UnityEngine;
 
     [Flags]
     public enum WallState
@@ -17,7 +16,6 @@ namespace BugGame
     [Serializable]
     public class Cell
     {
-        public bool IsVisited;
         public WallState WallState = WallState.All;
     }
 }

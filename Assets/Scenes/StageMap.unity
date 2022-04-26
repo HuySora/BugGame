@@ -2131,8 +2131,9 @@ GameObject:
   - component: {fileID: 1398453313}
   - component: {fileID: 1398453315}
   - component: {fileID: 1398453316}
+  - component: {fileID: 1398453317}
   m_Layer: 0
-  m_Name: Maze
+  m_Name: MazeManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2168,6 +2169,7 @@ MonoBehaviour:
   EditorWidth: 10
   EditorHeight: 10
   EditorSeed: 50
+  m_MazeAlgorithm: {fileID: 1398453317}
 --- !u!114 &1398453316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2181,7 +2183,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Generator: {fileID: 1398453315}
+  m_SquareSprite: {fileID: 0}
   m_CellSize: 1
+--- !u!114 &1398453317
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1398453312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bc13ef707988304a8a073df61d21b94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1416349366
 PrefabInstance:
   m_ObjectHideFlags: 0
