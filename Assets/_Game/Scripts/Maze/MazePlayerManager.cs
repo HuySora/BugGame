@@ -1,4 +1,4 @@
-namespace BugGame
+namespace BugGame.Maze
 {
     using MyBox;
     using UnityEngine;
@@ -22,6 +22,7 @@ namespace BugGame
             }
 
             var pos = MazeManager.CellToWorld(cellPos);
+
             m_CurrentPlayer.transform.SetPositionAndRotation(pos, Quaternion.identity);
         }
     }

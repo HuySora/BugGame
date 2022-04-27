@@ -1,5 +1,6 @@
-namespace BugGame
+namespace BugGame.Stage
 {
+    using MyBox;
     using System.Linq;
     using System.Collections.Generic;
     using UnityEngine;
@@ -9,7 +10,7 @@ namespace BugGame
 
     public partial class StageManager
     {
-        [ContextMenu("Generate 100 Seeds")]
+        [ButtonMethod(ButtonMethodDrawOrder.BeforeInspector)]
         public void Generate100Seeds()
         {
             var newSeeds = new int[m_StageSeeds.Length + 100];
@@ -51,11 +52,10 @@ namespace BugGame
         #endregion
         [Header("Dependencies")]
         [SerializeField] private RectTransform m_ContentTransform;
-        [SerializeField] private StageRow m_RowPrefab;
+        [SerializeField] private StageItem m_ItemPrefab;
 
         [SerializeField] private int[] m_StageSeeds;
 
-        //[SerializeField] private StageData[]
 
         private void Awake()
         {

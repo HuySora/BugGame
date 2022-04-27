@@ -1,31 +1,29 @@
-namespace BugGame
+namespace BugGame.Maze
 {
-    using MyBox;
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
 
     public class RecursiveBacktracking : MazeAlgorithm
     {
-        private WallState[,] m_WallStateMap;
+        private CellTile[,] m_CellMap;
         private bool[,] m_VisitedMap;
-        private int m_Seed;
+        private System.Random m_Rng;
         
-        public override void Initialize(WallState[,] wallStateMap, int seed)
+        public override void Initialize(CellTile[,] map, System.Random rng)
         {
-            m_WallStateMap = wallStateMap;
+            m_CellMap = map;
             // bool array to keep track of visited cells
-            m_VisitedMap = new bool[wallStateMap.GetLength(0), wallStateMap.GetLength(1)]; 
-            m_Seed = seed;
+            m_VisitedMap = new bool[map.GetLength(0), map.GetLength(1)]; 
+            m_Rng = rng;
         }
 
         public override IEnumerator DoAlgorithm()
         {
             // Setup
-            var rng = new System.Random(m_Seed);
             var posStack = new Stack<Vector2Int>();
             // Start at top-left
-            var startPos = new Vector2Int(0, m_WallStateMap.GetLength(1) - 1);
+            var startPos = new Vector2Int(0, m_CellMap.GetLength(1) - 1);
 
             // First cell
             m_VisitedMap[startPos.x, startPos.y] = true;
@@ -45,10 +43,10 @@ namespace BugGame
                 }
 
                 // Get random neighbour position
-                var nextPos = unvisitedPositions[rng.Next(0, unvisitedPositions.Count)];
+                var nextPos = unvisitedPositions[m_Rng.Next(0, unvisitedPositions.Count)];
 
                 // Adjust the current cell as well as the target cell
-                m_WallStateMap.TryRemoveWall(pos, nextPos);
+                m_CellMap.RemoveWall(pos, nextPos);
                 m_VisitedMap[nextPos.x, nextPos.y] = true;
                 OnCellPairModified(pos, nextPos);
 
@@ -71,7 +69,7 @@ namespace BugGame
             }
             // Right
             var rightPos = new Vector2Int(pos.x + 1, pos.y);
-            if (rightPos.x < m_WallStateMap.GetLength(0) && !m_VisitedMap[rightPos.x, rightPos.y])
+            if (rightPos.x < m_CellMap.GetLength(0) && !m_VisitedMap[rightPos.x, rightPos.y])
             {
                 result.Add(new Vector2Int(rightPos.x, rightPos.y));
             }
@@ -83,15 +81,13 @@ namespace BugGame
             }
             // Up
             var upPos = new Vector2Int(pos.x, pos.y + 1);
-            if (upPos.y < m_WallStateMap.GetLength(1) && !m_VisitedMap[upPos.x, upPos.y])
+            if (upPos.y < m_CellMap.GetLength(1) && !m_VisitedMap[upPos.x, upPos.y])
             {
                 result.Add(new Vector2Int(upPos.x, upPos.y));
             }
 
             return result.Count > 0;
         }
-
-        
     }
 }
 

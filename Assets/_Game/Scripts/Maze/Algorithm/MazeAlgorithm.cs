@@ -1,4 +1,4 @@
-namespace BugGame
+namespace BugGame.Maze
 {
     using System;
     using System.Collections;
@@ -24,8 +24,8 @@ namespace BugGame
         {
             MazeGenerated?.Invoke();
         }
-
-        public abstract void Initialize(WallState[,] wallstateMap, int seed);
+        
+        public abstract void Initialize(CellTile[,] wallstateMap, System.Random rng);
         public abstract IEnumerator DoAlgorithm();
     }
 }

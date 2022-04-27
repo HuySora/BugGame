@@ -1,4 +1,4 @@
-namespace BugGame.Canvas
+namespace BugGame.Stage
 {
     using UnityEngine;
     using UnityEngine.UI;

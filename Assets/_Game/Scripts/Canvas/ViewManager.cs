@@ -14,7 +14,7 @@ namespace BugGame.UI
         [SerializeField] private Canvas m_Canvas;
         [SerializeField] private ViewBehaviour m_InitialView;
 
-        // OPTIMIZABLE: Not sure if this cost performance
+        // OPTIMIZABLE: Not sure if this performance costly
         private Dictionary<Type, ViewBehaviour> m_TypeToInstance;
 
         private void Awake()

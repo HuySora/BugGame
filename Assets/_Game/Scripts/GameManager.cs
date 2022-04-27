@@ -1,35 +1,44 @@
+using BugGame.Maze;
+using BugGame.UI;
+
 namespace BugGame
 {
-    using MyBox;
     using UnityEngine;
 
-#if UNITY_EDITOR
-    using UnityEditor;
-
-    public partial class GameManager : IPrepare
+    public class GameManager : SingletonBehaviour<GameManager>
     {
-        [ButtonMethod]
-        public bool Prepare() {
-            bool wasNull = false;
-            
-            return wasNull;
-        }
-    }
-#endif
+        #region Static ----------------------------------------------------------------------------------------------------
+        public static void StartGame(int width, int height, int seed) => Current.Instance_StartGame(width, height, seed);
+        #endregion
 
-    public partial class GameManager : MonoBehaviour
-    {
         public void Awake()
         {
-            StartNewGame(10, 13, 0);
+            SingletonAwake();
+            Physics.autoSimulation = false;
+            Physics2D.simulationMode = SimulationMode2D.Script;
         }
 
-        public void StartNewGame(int width, int height, int seed)
+        public void Instance_StartGame(int width, int height, int seed)
         {
+            //ViewManager.SwitchTo<GameView>
+            MazeManager.MazeGenerated -= OnMazeGenerated;
+            MazeManager.MazeGenerated += OnMazeGenerated;
+            MazeManager.GateReached -= OnGateReached;
+            MazeManager.GateReached += OnGateReached;
+
             MazeManager.Generate(width, height, seed);
-            // Spawn at top-left
-            MazePlayerManager.Spawn(new Vector2Int(0, height - 1));
+
+            static void OnMazeGenerated(int width, int height)
+            {
+                // Spawn at top-left
+                MazePlayerManager.Spawn(new Vector2Int(0, height - 1));
+            }
+            static void OnGateReached()
+            {
+                StartGame(Random.Range(2, 5), Random.Range(2, 5), Random.Range(0, int.MaxValue));
+            }
         }
+
     }
 }
 

@@ -23,9 +23,22 @@ namespace BugGame
             return false;
         }
 
+        public static bool IsInBound<T>(this T[,] map, Vector2Int first)
+        {
+            if (first.x < 0 || first.x >= map.GetLength(0)
+            || first.y < 0 || first.y >= map.GetLength(1)) return false;
+
+            return true;
+        }
+        
         public static float GetOrthographicHeight(this Camera camera) => camera.orthographicSize * 2;
         public static float GetOrthographicWidth(this Camera camera) => camera.GetOrthographicHeight() * camera.aspect;
+        public static float ToAngle2D(this Vector2 dir, bool asRad = false)
+        {
+            float rad = Mathf.Atan2(dir.y, dir.x);
 
+            return asRad ? rad : rad * Mathf.Rad2Deg;
+        }
     }
 }
 
