@@ -35,8 +35,11 @@ namespace BugGame.Stage
     public partial class StageManager : SingletonBehaviour<StageManager>
     {
         #region Static ----------------------------------------------------------------------------------------------------
-        public static int GetData(int index) => Current.m_StageSeeds[index];
         public static void RefreshItem(int index) => Current.Instance_RefreshItem(index);
+        /// <summary>
+        /// Currently we only have seeds at data
+        /// </summary>
+        public static bool TryGetData(int index, out int data) => Current.Instance_TryGetData(index, out data);
         #endregion
 
         [Header("Dependencies")]
@@ -62,6 +65,20 @@ namespace BugGame.Stage
                 m_StageItems[i] = Instantiate(m_ItemPrefab, m_ContentTransform);
                 Instance_RefreshItem(i);
             }
+        }
+
+        private bool Instance_TryGetData(int index, out int data)
+        {
+            // Bound check
+            if (!m_StageSeeds.IsInBound(index))
+            {
+                // We will return null here but since it's an int, so why the hassel
+                data = m_StageSeeds[^1];
+                return false;
+            }
+
+            data = m_StageSeeds[index];
+            return true;
         }
 
         private void Instance_RefreshItem(int index)

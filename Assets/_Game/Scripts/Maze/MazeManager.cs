@@ -51,13 +51,30 @@ namespace BugGame.Maze
         public static event Action GateReached;
 
         /// <summary>
-        /// Generate new maze map.
+        /// Generate new maze
         /// </summary>
         public static void Generate(int width, int height, int seed) => Current.Instance_Generate(width, height, seed);
+        /// <summary>
+        /// Clear the current maze
+        /// </summary>
+        public static void Clear() => Current.Instance_Clear();
 
+        /// <summary>
+        /// Solve current maze from player position
+        /// </summary>
+        public static void SolveForPlayer()
+        {
+            var cellPos = WorldToCell(MazePlayerManager.Player.transform.position);
+            TrySolve(cellPos);
+        }
+        /// <summary>
+        /// Solve current maze from position
+        /// </summary>
         public static bool TrySolve(Vector2Int fromCellPos) => Current.Instance_TrySolve(fromCellPos);
 
-        //public static void ShowHint
+        /// <summary>
+        /// Invoke cell on maze at position
+        /// </summary>
         public static bool TryInvokeCell(Vector2Int cellPos) => Current.Instance_TryInvokeCell(cellPos);
 
         /// <summary>
@@ -84,6 +101,7 @@ namespace BugGame.Maze
 
         [Separator("-----Dependencies-----")]
         [SerializeField, AutoProperty] private Grid m_Grid;
+        [SerializeField, AutoProperty] private LineRenderer m_LineRenderer;
         [SerializeField] private CellTile m_CellTilePrefab;
         [SerializeField] private MazeGenerator m_MazeGenerator;
         [SerializeField] private MazeSolver m_MazeSolver;
@@ -100,6 +118,7 @@ namespace BugGame.Maze
         
         private Vector2Int m_GateCellPos;
         private Coroutine m_SolverRoutine;
+        private Vector2Int[] m_LastSolvePathCellPositions;
 
         public void Awake()
         {
@@ -113,12 +132,25 @@ namespace BugGame.Maze
             m_Grid.cellSwizzle = GridLayout.CellSwizzle.XYZ;
         }
 
+        #region Generate Maze
         private void Instance_Generate(int width, int height, int seed)
         {
             if (m_GeneratorRoutine != null) StopCoroutine(m_GeneratorRoutine);
 
             // Initialize
-            InitializeCellMap(width, height);
+            ClearCellMap();
+            m_CellMap = new CellTile[width, height];
+
+            for (int i = 0; i < width; i++)
+            {
+                for (int j = 0; j < height; j++)
+                {
+                    var pos = Instance_CellToWorld(new Vector2Int(i, j));
+                    // OPTIMIZABLE: Pool this (1)
+                    m_CellMap[i, j] = Instantiate(m_CellTilePrefab, pos, Quaternion.identity, transform);
+                    m_CellMap[i, j].UpdateWalls(WallStates.All);
+                }
+            }
             m_GeneratorRng = new System.Random(seed);
             m_MazeGenerator.Initialize(m_CellMap, m_GeneratorRng);
 
@@ -129,8 +161,8 @@ namespace BugGame.Maze
             m_MazeGenerator.MazeGenerated += OnMazeGenerated;
 
             m_GeneratorRoutine = StartCoroutine(m_MazeGenerator.DoAlgorithm());
-        }
-        private void InitializeCellMap(int width, int height)
+        }    
+        private void ClearCellMap()
         {
             // Setup, clear old data
             if (m_CellMap != null)
@@ -144,19 +176,7 @@ namespace BugGame.Maze
                     }
                 }
             }
-            m_CellMap = new CellTile[width, height];
-
-            // Initialize values
-            for (int i = 0; i < width; i++)
-            {
-                for (int j = 0; j < height; j++)
-                {
-                    var pos = Instance_CellToWorld(new Vector2Int(i, j));
-                    // OPTIMIZABLE: Pool this (1)
-                    m_CellMap[i, j] = Instantiate(m_CellTilePrefab, pos, Quaternion.identity, transform);
-                    m_CellMap[i, j].UpdateWalls(WallStates.All);
-                }
-            }
+            m_CellMap = null;
         }
         private void OnMazeGenerated()
         {
@@ -177,10 +197,21 @@ namespace BugGame.Maze
             // TODO: Create gate on runtime rather than embedded into the cell tile
             m_CellMap[ranX, ranY].SetPortal(true);
             m_GateCellPos = new Vector2Int(ranX, ranY);
-            
+
+            // Clear hint path
+            ClearHintPath();
+
             MazeGenerated?.Invoke(m_CellMap.GetLength(0), m_CellMap.GetLength(1));
         }
+        private void Instance_Clear()
+        {
+            if (m_GeneratorRoutine != null) StopCoroutine(m_GeneratorRoutine);
+            ClearCellMap();
+            ClearHintPath();
+        }
+        #endregion
 
+        #region Solve Maze
         private bool Instance_TrySolve(Vector2Int fromCellPos)
         {
             if (!m_CellMap.IsInBound(fromCellPos))
@@ -195,21 +226,33 @@ namespace BugGame.Maze
 
             m_MazeSolver.Initialize(m_CellMap, fromCellPos, m_GateCellPos);
 
-            // TODO: Currently the coroutine finished instantly so we can safely return true, will
-            // implementing "async operation handler" later if have time
+            // TODO: Currently the coroutine finished instantly so we can safely return instantly, will
+            // implementing "async operation handler" later if we have time
             m_SolverRoutine = StartCoroutine(m_MazeSolver.DoAlgorithm());
+            // As well as we return true since current project logic can't produce invalid maze
             return true;
         }
         private void OnPathGenerated(Vector2Int[] pathCellPositions)
         {
-            for(int i = 1; i < pathCellPositions.Length; i++)
+            m_LastSolvePathCellPositions = pathCellPositions;
+            ShowHintPath();
+        }
+        private void ShowHintPath()
+        {
+            m_LineRenderer.positionCount = m_LastSolvePathCellPositions.Length;
+            for (int i = 0; i < m_LastSolvePathCellPositions.Length; i++)
             {
-                var fromPos = CellToWorld(pathCellPositions[i - 1]);
-                var toPos = CellToWorld(pathCellPositions[i]);
-                Debug.DrawLine(fromPos, toPos, Color.green, 3f);
+                m_LineRenderer.SetPosition(i, CellToWorld(m_LastSolvePathCellPositions[i]));
             }
         }
+        private void ClearHintPath()
+        {
+            m_LastSolvePathCellPositions = null;
+            m_LineRenderer.positionCount = 0;
+        }
+        #endregion
 
+        #region Cell Manipulating
         private bool Instance_TryInvokeCell(Vector2Int cellPos)
         {
             if (!m_CellMap.IsInBound(cellPos))
@@ -238,6 +281,7 @@ namespace BugGame.Maze
             pos.z = m_Grid.transform.position.z;
             return pos;
         }
+        #endregion
     }
 }
 

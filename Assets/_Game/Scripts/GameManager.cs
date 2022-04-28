@@ -4,6 +4,7 @@ using BugGame.UI;
 
 namespace BugGame
 {
+    using System;
     using UnityEngine;
 
     public enum GameState
@@ -17,6 +18,9 @@ namespace BugGame
         #region Static ----------------------------------------------------------------------------------------------------
         public static int CurrentStage => Current.m_CurrentStage;
         public static void StartMaze(int index) => Current.Instance_StartMaze(index);
+        public static void RestartMaze() => Current.Instance_StartMaze(CurrentStage);
+        public static void NextMaze() => Current.Instance_StartMaze(CurrentStage + 1);
+        public static void GoToStageMap() => Current.Instance_GoToStageMap();
         #endregion
 
         private GameState m_GameState = GameState.Stage;
@@ -32,13 +36,13 @@ namespace BugGame
 
         private void Instance_StartMaze(int index)
         {
+            // Lazy code here since it doesn't matter much (seed will always have a value)
+            StageManager.TryGetData(index, out int seed);
+            m_CurrentStage = index;
+
             // Switch view & state
             ViewManager.SwitchTo<GameView>();
             m_GameState = GameState.Maze;
-
-            // Stage data only contain seed atm
-            int seed = StageManager.GetData(index);
-            m_CurrentStage = index;
 
             // Do maze generating
             MazeManager.MazeGenerated -= OnMazeGenerated;
@@ -47,8 +51,8 @@ namespace BugGame
             MazeManager.GateReached += OnGateReached;
 
             // TODO: Maybe make this a feature? (Hard-code width & size because we don't really need it atm)
-            int width = Mathf.Clamp(index, 2, 20);
-            int height = Mathf.Clamp(index + 3, 2, 20);
+            int width = Mathf.Clamp(index, 2, 10);
+            int height = Mathf.Clamp(index + 3, 2, 15);
             MazeManager.Generate(width, height, seed);
 
             #region Local Functions
@@ -62,6 +66,16 @@ namespace BugGame
                 StartMaze(CurrentStage + 1);
             }
             #endregion
+        }
+
+        private void Instance_GoToStageMap()
+        {
+            // Switch view & state
+            ViewManager.SwitchTo<StageView>();
+            m_GameState = GameState.Stage;
+
+            MazeManager.Clear();
+            MazePlayerManager.Despawn();
         }
     }
 }

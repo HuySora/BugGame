@@ -1,6 +1,5 @@
 namespace BugGame.Maze
 {
-    using System;
     using System.Collections;
     using System.Collections.Generic;
     using System.Linq;
@@ -27,10 +26,10 @@ namespace BugGame.Maze
         public override IEnumerator DoAlgorithm()
         {
             // TODO: Implementing heap collection
-            var cellPosToCellTile = new Dictionary<Vector2Int, AStarCellTile>();
+            var cellPosToCellTile = new Dictionary<Vector2Int, AStarNode>();
 
             // Start cell & position
-            var startCell = new AStarCellTile(0f, ManhattanDistance(m_FromCellPos, m_ToCellPos), m_FromCellPos);
+            var startCell = new AStarNode(0f, ManhattanDistance(m_FromCellPos, m_ToCellPos), m_FromCellPos);
             cellPosToCellTile[m_FromCellPos] = startCell;
 
             while (cellPosToCellTile.Count > 0)
@@ -62,7 +61,7 @@ namespace BugGame.Maze
                 }
 
                 // REFACTOR: This just a quickfix to mark position as visited because the coder is dumb :D
-                cellPosToCellTile[currPair.Key] = new AStarCellTile(float.MaxValue, float.MaxValue, cellPosToCellTile[currPair.Key].ParentCellPos);
+                cellPosToCellTile[currPair.Key] = new AStarNode(float.MaxValue, float.MaxValue, cellPosToCellTile[currPair.Key].ParentCellPos);
 
                 // Continue to next position as we have no valid neighbours
                 if (!TryGetValidNeighbours(currPair.Key, out List<Vector2Int> validCellPositions))
@@ -79,7 +78,7 @@ namespace BugGame.Maze
                     // We have better path (lower G cost)
                     if (currPair.Value.GCost < nextCellGCost)
                     {
-                        var nextCell = new AStarCellTile(nextCellGCost, ManhattanDistance(nextCellPos, m_ToCellPos), currPair.Key);
+                        var nextCell = new AStarNode(nextCellGCost, ManhattanDistance(nextCellPos, m_ToCellPos), currPair.Key);
                         cellPosToCellTile[nextCellPos] = nextCell;
                     }
                 }
