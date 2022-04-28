@@ -4,7 +4,8 @@ namespace BugGame.Maze
     using System.Collections.Generic;
     using UnityEngine;
 
-    public class RecursiveBacktracking : MazeAlgorithm
+    [CreateAssetMenu(fileName = "MG_RecursiveBacktracking", menuName = "MazeGenerator/RecursiveBacktracking")]
+    public class RecursiveBacktracking : MazeGenerator
     {
         private CellTile[,] m_CellMap;
         private bool[,] m_VisitedMap;

@@ -4,8 +4,7 @@ namespace BugGame.Maze
     using System.Collections;
     using UnityEngine;
 
-    // TODO: Making this to be a scriptable object so it give us more flexibility
-    public abstract class MazeAlgorithm : MonoBehaviour
+    public abstract class MazeGenerator : ScriptableObject
     {
         public event Action<Vector2Int> HeadCellPositionChanged;
         protected virtual void OnHeadCellPositionChanged(Vector2Int pos)

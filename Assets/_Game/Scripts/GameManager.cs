@@ -1,4 +1,5 @@
 using BugGame.Maze;
+using BugGame.Stage;
 using BugGame.UI;
 
 namespace BugGame
@@ -20,7 +21,8 @@ namespace BugGame
 
         public void Instance_StartGame(int width, int height, int seed)
         {
-            //ViewManager.SwitchTo<GameView>
+            ViewManager.SwitchTo<GameView>();
+            
             MazeManager.MazeGenerated -= OnMazeGenerated;
             MazeManager.MazeGenerated += OnMazeGenerated;
             MazeManager.GateReached -= OnGateReached;
@@ -35,7 +37,6 @@ namespace BugGame
             }
             static void OnGateReached()
             {
-                StartGame(Random.Range(2, 5), Random.Range(2, 5), Random.Range(0, int.MaxValue));
             }
         }
 

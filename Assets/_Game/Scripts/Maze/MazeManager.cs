@@ -73,7 +73,7 @@ namespace BugGame.Maze
 
         [Separator("-----Dependencies-----")]
         [SerializeField, AutoProperty] private Grid m_Grid;
-        [SerializeField] private MazeAlgorithm m_MazeAlgorithm;
+        [SerializeField] private MazeGenerator m_MazeGenerator;
         [SerializeField] private CellTile m_CellSprite;
 
         [Separator("-----Settings------")]
@@ -96,25 +96,24 @@ namespace BugGame.Maze
             m_Grid.cellSwizzle = GridLayout.CellSwizzle.XYZ;
         }
 
-        public void Instance_Generate(int width, int height, int seed)
+        private void Instance_Generate(int width, int height, int seed)
         {
             if (m_CurrentRoutine != null) StopCoroutine(m_CurrentRoutine);
 
             // Initialize
             InitializeCellMap(width, height);
             m_CurrentRng = new System.Random(seed);
-            m_MazeAlgorithm.Initialize(m_CellMap, m_CurrentRng);
+            m_MazeGenerator.Initialize(m_CellMap, m_CurrentRng);
 
             // Make sure we only subcribe once
-            m_MazeAlgorithm.HeadCellPositionChanged -= HeadCellPositionChanged;
-            m_MazeAlgorithm.HeadCellPositionChanged += HeadCellPositionChanged;
-            m_MazeAlgorithm.MazeGenerated -= OnMazeGenerated;
-            m_MazeAlgorithm.MazeGenerated += OnMazeGenerated;
+            m_MazeGenerator.HeadCellPositionChanged -= HeadCellPositionChanged;
+            m_MazeGenerator.HeadCellPositionChanged += HeadCellPositionChanged;
+            m_MazeGenerator.MazeGenerated -= OnMazeGenerated;
+            m_MazeGenerator.MazeGenerated += OnMazeGenerated;
 
-            m_CurrentRoutine = StartCoroutine(m_MazeAlgorithm.DoAlgorithm());
+            m_CurrentRoutine = StartCoroutine(m_MazeGenerator.DoAlgorithm());
         }
-
-        public void InitializeCellMap(int width, int height)
+        private void InitializeCellMap(int width, int height)
         {
             // Setup, clear old data
             if (m_CellMap != null)
@@ -142,7 +141,7 @@ namespace BugGame.Maze
                 }
             }
         }
-        public void OnMazeGenerated()
+        private void OnMazeGenerated()
         {
             // Adjust camera size to fit the maze
             float widthInUnityUnit = m_Grid.cellSize.x * m_CellMap.GetLength(0);
