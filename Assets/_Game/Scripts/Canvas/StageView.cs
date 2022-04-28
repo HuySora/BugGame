@@ -15,13 +15,8 @@ namespace BugGame.UI
         [Header("Settings")]
         [SerializeField] private float m_FadeDuration = 1f;
 
-        private bool m_IsOpened;
+        private bool m_IsOpened = true;
         private Tweener m_Tweener;
-
-        private void Awake()
-        {
-            m_Canvas.enabled = false;
-        }
 
         public override void Open()
         {

@@ -35,6 +35,8 @@ namespace BugGame.Stage
     public partial class StageManager : SingletonBehaviour<StageManager>
     {
         #region Static ----------------------------------------------------------------------------------------------------
+        public static int GetData(int index) => Current.m_StageSeeds[index];
+        public static void RefreshItem(int index) => Current.Instance_RefreshItem(index);
         #endregion
 
         [Header("Dependencies")]
@@ -58,22 +60,17 @@ namespace BugGame.Stage
             for (int i = 0; i < m_StageSeeds.Length; i++)
             {
                 m_StageItems[i] = Instantiate(m_ItemPrefab, m_ContentTransform);
-                Instance_RefreshStage(i);
+                Instance_RefreshItem(i);
             }
         }
 
-        private void Instance_RefreshStage(int index)
+        private void Instance_RefreshItem(int index)
         {
             var data = DataManager.Get();
 
             // Event on stage button click
             m_StageItems[index].Button.onClick.RemoveAllListeners();
-            m_StageItems[index].Button.onClick.AddListener(() =>
-            {
-                int width = Mathf.Clamp(index + 1, 2, 20);
-                int height = Mathf.Clamp(index + 4, 2, 20);
-                GameManager.StartGame(width, height, Current.m_StageSeeds[index]);
-            });
+            m_StageItems[index].Button.onClick.AddListener(() => GameManager.StartMaze(index));
 
             // Star rating
             if (data.LevelToStarRating.ContainsKey(index))

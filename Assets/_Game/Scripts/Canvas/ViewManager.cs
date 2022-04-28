@@ -1,18 +1,19 @@
 namespace BugGame.UI
 {
+    using MyBox;
     using System;
     using System.Collections.Generic;
     using UnityEngine;
-    
-    public partial class ViewManager : SingletonBehaviour<ViewManager> {
+
+    public class ViewManager : SingletonBehaviour<ViewManager> {
         #region Static ----------------------------------------------------------------------------------------------------
         public static Canvas Canvas => Current.m_Canvas;
         public static void SwitchTo<T>() where T : ViewBehaviour => Current.InnerSwitchTo<T>();
         public static void SwitchTo(ViewBehaviour view) => Current.InnerSwitchTo(view);
         #endregion
 
+        [Separator("-----Dependencies-----")]
         [SerializeField] private Canvas m_Canvas;
-        [SerializeField] private ViewBehaviour m_InitialView;
 
         // OPTIMIZABLE: Not sure if this performance costly
         private Dictionary<Type, ViewBehaviour> m_TypeToInstance;
@@ -23,10 +24,9 @@ namespace BugGame.UI
             foreach (var view in FindObjectsOfType<ViewBehaviour>())
             {
                 m_TypeToInstance[view.GetType()] = view;
+                view.Close();
             }
         }
-
-        private void Start() => m_InitialView.Open();
 
         private void InnerSwitchTo<T>()
         where T : ViewBehaviour

@@ -14,7 +14,7 @@ namespace BugGame.Stage
 
     public partial class StageItem : MonoBehaviour
     {
-        [SerializeField] public Button Button;
+        [field: SerializeField] public Button Button { get; private set; }
         [SerializeField] private TextMeshProUGUI m_NumberText;
         [SerializeField] private Image m_LockedImage;
         [SerializeField] private Image m_Star1;

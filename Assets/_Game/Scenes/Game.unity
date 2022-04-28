@@ -926,7 +926,7 @@ MonoBehaviour:
   m_Canvas: {fileID: 887989043}
   m_CanvasGroup: {fileID: 887989045}
   m_GraphicRaycaster: {fileID: 887989041}
-  m_FadeDuration: 0.25
+  m_FadeDuration: 1
 --- !u!225 &887989045
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -1342,7 +1342,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1451485870}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 0
   m_Camera: {fileID: 0}
@@ -1371,7 +1371,7 @@ MonoBehaviour:
   m_Canvas: {fileID: 1451485873}
   m_CanvasGroup: {fileID: 1451485876}
   m_GraphicRaycaster: {fileID: 1451485872}
-  m_FadeDuration: 0.25
+  m_FadeDuration: 1
 --- !u!225 &1451485876
 CanvasGroup:
   m_ObjectHideFlags: 0
