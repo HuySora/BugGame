@@ -66,6 +66,13 @@ namespace BugGame.Stage
 
         private void Instance_RefreshItem(int index)
         {
+            // Bound check
+            if (!m_StageItems.IsInBound(index))
+            {
+                this.LogNull("Index out of bound of " + nameof(m_StageItems), this);
+                return;
+            }
+
             var data = DataManager.Get();
 
             // Event on stage button click

@@ -38,7 +38,7 @@ namespace BugGame.Maze
                 m_Tweener = transform.DOMove(toSnappedPos, m_TweenSpeed).OnComplete(() =>
                 {
                     // Trigger cell event (only gate for now)
-                    MazeManager.InvokeCell(toCellPos);
+                    MazeManager.TryInvokeCell(toCellPos);
                 });
             }
         }

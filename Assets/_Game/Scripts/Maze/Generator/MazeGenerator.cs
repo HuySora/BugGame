@@ -24,7 +24,7 @@ namespace BugGame.Maze
             MazeGenerated?.Invoke();
         }
         
-        public abstract void Initialize(CellTile[,] wallstateMap, System.Random rng);
+        public abstract void Initialize(CellTile[,] map, System.Random rng);
         public abstract IEnumerator DoAlgorithm();
     }
 }

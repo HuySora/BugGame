@@ -7,7 +7,7 @@ namespace BugGame
         public static bool TryNullCheckAndLog<T, TTrace, TSender>(this T target, string message, TTrace trace, TSender sender)
         where T : Object
         where TTrace : Object
-        where TSender: Object
+        where TSender : Object
         {
             if (target == null && trace == null)
             {
@@ -23,14 +23,13 @@ namespace BugGame
             return false;
         }
 
-        public static bool IsInBound<T>(this T[,] map, Vector2Int first)
-        {
-            if (first.x < 0 || first.x >= map.GetLength(0)
-            || first.y < 0 || first.y >= map.GetLength(1)) return false;
+        public static bool IsInBound<T>(this T[] array, int index)
+            => index >= 0 && index < array.Length;
 
-            return true;
-        }
-        
+        public static bool IsInBound<T>(this T[,] map, Vector2Int first)
+            => first.x >= 0 && first.x < map.GetLength(0)
+            && first.y >= 0 && first.y < map.GetLength(1);
+
         public static float GetOrthographicHeight(this Camera camera) => camera.orthographicSize * 2;
         public static float GetOrthographicWidth(this Camera camera) => camera.GetOrthographicHeight() * camera.aspect;
         public static float ToAngle2D(this Vector2 dir, bool asRad = false)

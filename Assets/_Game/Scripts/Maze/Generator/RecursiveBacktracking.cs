@@ -37,14 +37,14 @@ namespace BugGame.Maze
 
                 OnHeadCellPositionChanged(pos);
                 // Continue to next position as we have no neighbour
-                if (TryGetUnvisitedNeighbours(pos, out List<Vector2Int> unvisitedPositions) == false)
+                if (TryGetUnvisitedNeighbours(pos, out List<Vector2Int> unvisitedCellPositions) == false)
                 {
                     posStack.Pop();
                     continue;
                 }
 
                 // Get random neighbour position
-                var nextPos = unvisitedPositions[m_Rng.Next(0, unvisitedPositions.Count)];
+                var nextPos = unvisitedCellPositions[m_Rng.Next(0, unvisitedCellPositions.Count)];
 
                 // Adjust the current cell as well as the target cell
                 m_CellMap.RemoveWall(pos, nextPos);
