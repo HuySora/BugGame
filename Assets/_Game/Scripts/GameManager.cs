@@ -16,6 +16,7 @@ namespace BugGame
     public class GameManager : SingletonBehaviour<GameManager>
     {
         #region Static ----------------------------------------------------------------------------------------------------
+        public static event Action<int> MazeStarted;
         public static int CurrentStage => Current.m_CurrentStage;
         public static void StartMaze(int index) => Current.Instance_StartMaze(index);
         public static void RestartMaze() => Current.Instance_StartMaze(CurrentStage);
@@ -54,6 +55,8 @@ namespace BugGame
             int width = Mathf.Clamp(index, 2, 10);
             int height = Mathf.Clamp(index + 3, 2, 15);
             MazeManager.Generate(width, height, seed);
+            
+            MazeStarted?.Invoke(index);
 
             #region Local Functions
             static void OnMazeGenerated(int width, int height)

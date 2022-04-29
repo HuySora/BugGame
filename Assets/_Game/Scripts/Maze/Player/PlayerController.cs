@@ -13,12 +13,12 @@ namespace BugGame.Maze
         }
 
         [Separator("-----Settings-----")]
-        [SerializeField] private ControllerScheme m_ControllerScheme;
         [SerializeField, Range(0f, 10f)] private float m_TweenSpeed;
+        [SerializeField, ReadOnly] private ControllerScheme m_ControllerScheme;
 
         private Tweener m_Tweener;
 
-        public void Update()
+        private void Update()
         {
             // OPTIMIZABLE: We could have an bool to check if the ControllerScheme required to move or not
             // (player vs AI) before doing fromCellPos calculation
@@ -40,6 +40,11 @@ namespace BugGame.Maze
                 // Trigger cell event (only gate for now)
                 MazeManager.TryInvokeCell(desiredCellPos);
             });
+        }
+
+        private void OnDestroy()
+        {
+            m_Tweener.Kill();
         }
     }
 }

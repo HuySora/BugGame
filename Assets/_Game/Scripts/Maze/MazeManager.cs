@@ -86,18 +86,16 @@ namespace BugGame.Maze
         /// Cell coordinate of <see cref="m_Grid"/> to world coordinate with it Z axis.
         /// </summary>
         public static Vector3 CellToWorld(Vector2Int cellPos) => Current.Instance_CellToWorld(cellPos);
-        
+
         /// <summary>
         /// True if cell in maze bound.
         /// </summary>
-        public static bool IsInBound(Vector2Int cellPos)
-            => Current.m_CellMap.IsInBound(cellPos);
+        public static bool IsInBound(Vector2Int cellPos) => Current.Instance_IsInBound(cellPos);
 
         /// <summary>
         /// True if these 2 cells are passable.
         /// </summary>
-        public static bool IsPassable(Vector2Int fromCellPos, Vector2Int toCellPos)
-            => Current.m_CellMap.IsPassable(fromCellPos, toCellPos);
+        public static bool IsPassable(Vector2Int fromCellPos, Vector2Int toCellPos) => Current.Instance_IsPassable(fromCellPos, toCellPos);
         #endregion
 
         [Separator("-----Dependencies-----")]
@@ -258,11 +256,33 @@ namespace BugGame.Maze
 
         #region Cell Methods
         /// <summary>
+        /// True if cell in maze bound.
+        /// </summary>
+        private bool Instance_IsInBound(Vector2Int cellPos)
+        {
+            if (m_CellMap == null)
+                return false;
+
+            return m_CellMap.IsInBound(cellPos);
+        }
+
+        /// <summary>
+        /// True if these 2 cells are passable.
+        /// </summary>
+        private bool Instance_IsPassable(Vector2Int fromCellPos, Vector2Int toCellPos)
+        {
+            if (m_CellMap == null)
+                return false;
+
+            return m_CellMap.IsPassable(fromCellPos, toCellPos);
+        }
+
+        /// <summary>
         /// Invoke cell event as specific cell position`
         /// </summary>
         private bool Instance_TryInvokeCell(Vector2Int cellPos)
         {
-            if (!m_CellMap.IsInBound(cellPos))
+            if (!Instance_IsInBound(cellPos))
                 return false;
 
             // TODO: Could add custom event for cell types

@@ -10,7 +10,7 @@ namespace BugGame.Maze
         public static PlayerController Player => Current.m_Player;
         public static void Spawn(Vector2Int cellPos) => Current.Instance_Spawn(cellPos);
         public static void Despawn() => Current.Instance_Despawn();
-        public static void SetAI(bool isAuto) => Current.Instance_SetAI(isAuto);
+        public static void ToggleAI() => Current.Instance_SetAI();
         #endregion
 
         [Separator("-----Dependencies-----")]
@@ -37,11 +37,11 @@ namespace BugGame.Maze
                 Destroy(m_Player.gameObject);
         }
 
-        private void Instance_SetAI(bool isAI)
+        private void Instance_SetAI()
         {
-            m_IsAI = isAI;
+            m_IsAI = !m_IsAI;
             if (m_Player != null)
-                m_Player.ControllerScheme = isAI ? m_AIControllerScheme : m_PlayerControllerScheme;
+                m_Player.ControllerScheme = m_IsAI ? m_AIControllerScheme : m_PlayerControllerScheme;
         }
     }
 }
