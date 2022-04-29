@@ -12,7 +12,7 @@ namespace BugGame.Maze
             PathGenerated?.Invoke(pathCellPositions);
         }
 
-        public abstract void Initialize(CellTile[,] map, Vector2Int fromCellPos, Vector2Int toCellPos);
+        public abstract void Initialize(MazeCell[,] map, Vector2Int fromCellPos, Vector2Int toCellPos);
         public abstract IEnumerator DoAlgorithm();
     }
 }

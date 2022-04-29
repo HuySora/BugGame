@@ -59,7 +59,7 @@ namespace BugGame
             static void OnMazeGenerated(int width, int height)
             {
                 // Spawn at top-left
-                MazePlayerManager.Spawn(new Vector2Int(0, height - 1));
+                PlayerManager.Spawn(new Vector2Int(0, height - 1));
             }
             static void OnGateReached()
             {
@@ -75,7 +75,7 @@ namespace BugGame
             m_GameState = GameState.Stage;
 
             MazeManager.Clear();
-            MazePlayerManager.Despawn();
+            PlayerManager.Despawn();
         }
     }
 }

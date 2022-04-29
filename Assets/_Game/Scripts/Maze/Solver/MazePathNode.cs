@@ -1,17 +1,18 @@
 namespace BugGame.Maze
 {
-    using MyBox;
     using UnityEngine;
 
     public class MazePathNode
     {
         public readonly Vector2Int CellPos;
-        public readonly MazePathNode PreviousPathNode;
+        public readonly MazePathNode PrevPathNode;
+        public readonly MazePathNode NextPathNode;
 
-        public MazePathNode(Vector2Int cellPos, MazePathNode previousPathNode)
+        public MazePathNode(Vector2Int cellPos, MazePathNode prevPathNode, MazePathNode nextPathNode)
         {
             CellPos = cellPos;
-            PreviousPathNode = previousPathNode;
+            PrevPathNode = prevPathNode;
+            NextPathNode = nextPathNode;
         }
     }
 }

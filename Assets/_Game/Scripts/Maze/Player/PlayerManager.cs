@@ -4,19 +4,21 @@ namespace BugGame.Maze
     using System;
     using UnityEngine;
 
-    public partial class MazePlayerManager : SingletonBehaviour<MazePlayerManager>
+    public partial class PlayerManager : SingletonBehaviour<PlayerManager>
     {
         #region Static ----------------------------------------------------------------------------------------------------
-        public static MazePlayerController Player => Current.m_Player;
+        public static PlayerController Player => Current.m_Player;
         public static void Spawn(Vector2Int cellPos) => Current.Instance_Spawn(cellPos);
         public static void Despawn() => Current.Instance_Despawn();
         public static void SetAI(bool isAuto) => Current.Instance_SetAI(isAuto);
         #endregion
 
         [Separator("-----Dependencies-----")]
-        [SerializeField] private MazePlayerController m_PlayerPrefab;
+        [SerializeField] private PlayerController m_PlayerPrefab;
+        [SerializeField] private ControllerScheme m_PlayerControllerScheme;
+        [SerializeField] private ControllerScheme m_AIControllerScheme;
 
-        private MazePlayerController m_Player;
+        private PlayerController m_Player;
 
         public void Instance_Spawn(Vector2Int cellPos)
         {
@@ -35,9 +37,7 @@ namespace BugGame.Maze
 
         private void Instance_SetAI(bool isAuto)
         {
-            //MazeManager.MazeGenerated
-            MazeManager.SolveForPlayer();
-        }
+            m_Player.ControllerScheme = isAuto ? m_AIControllerScheme : m_PlayerControllerScheme;        }
     }
 }
 

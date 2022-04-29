@@ -27,7 +27,7 @@ namespace BugGame.Maze
         {
             if (!Application.isPlaying) return;
 
-            Instance_TrySolve(WorldToCell(FindObjectOfType<MazePlayerController>().transform.position));
+            Instance_TrySolve(WorldToCell(FindObjectOfType<PlayerController>().transform.position));
         }
     }
 #endif
@@ -46,31 +46,32 @@ namespace BugGame.Maze
     public partial class MazeManager : SingletonBehaviour<MazeManager>
     {
         #region Static ----------------------------------------------------------------------------------------------------
-        public static event Action<Vector2Int> HeadCellPositionChanged;
         public static event Action<int, int> MazeGenerated;
         public static event Action GateReached;
+        public static event Action<Vector2Int[]> PathGenerated;
 
         /// <summary>
         /// Generate new maze
         /// </summary>
         public static void Generate(int width, int height, int seed) => Current.Instance_Generate(width, height, seed);
-        /// <summary>
-        /// Clear the current maze
-        /// </summary>
-        public static void Clear() => Current.Instance_Clear();
 
         /// <summary>
         /// Solve current maze from player position
         /// </summary>
         public static void SolveForPlayer()
         {
-            var cellPos = WorldToCell(MazePlayerManager.Player.transform.position);
+            var cellPos = WorldToCell(PlayerManager.Player.transform.position);
             TrySolve(cellPos);
         }
         /// <summary>
         /// Solve current maze from position
         /// </summary>
         public static bool TrySolve(Vector2Int fromCellPos) => Current.Instance_TrySolve(fromCellPos);
+
+        /// <summary>
+        /// Clear the current maze
+        /// </summary>
+        public static void Clear() => Current.Instance_Clear();
 
         /// <summary>
         /// Invoke cell on maze at position
@@ -102,7 +103,7 @@ namespace BugGame.Maze
         [Separator("-----Dependencies-----")]
         [SerializeField, AutoProperty] private Grid m_Grid;
         [SerializeField, AutoProperty] private LineRenderer m_LineRenderer;
-        [SerializeField] private CellTile m_CellTilePrefab;
+        [SerializeField] private MazeCell m_CellTilePrefab;
         [SerializeField] private MazeGenerator m_MazeGenerator;
         [SerializeField] private MazeSolver m_MazeSolver;
 
@@ -112,7 +113,7 @@ namespace BugGame.Maze
         [OverrideLabel("Camera Fit Bottom Padding (%)")]
         [SerializeField, Range(0f, 1f)] private float m_CameraFitBottomPadding = 0.01f;
 
-        private CellTile[,] m_CellMap;
+        private MazeCell[,] m_CellMap;
         private System.Random m_GeneratorRng;
         private Coroutine m_GeneratorRoutine;
         
@@ -135,11 +136,11 @@ namespace BugGame.Maze
         #region Generate Maze
         private void Instance_Generate(int width, int height, int seed)
         {
-            if (m_GeneratorRoutine != null) StopCoroutine(m_GeneratorRoutine);
+            // Clean up previous
+            Instance_Clear();
 
             // Initialize
-            ClearCellMap();
-            m_CellMap = new CellTile[width, height];
+            m_CellMap = new MazeCell[width, height];
 
             for (int i = 0; i < width; i++)
             {
@@ -155,29 +156,11 @@ namespace BugGame.Maze
             m_MazeGenerator.Initialize(m_CellMap, m_GeneratorRng);
 
             // Make sure we only subcribe once
-            m_MazeGenerator.HeadCellPositionChanged -= HeadCellPositionChanged;
-            m_MazeGenerator.HeadCellPositionChanged += HeadCellPositionChanged;
             m_MazeGenerator.MazeGenerated -= OnMazeGenerated;
             m_MazeGenerator.MazeGenerated += OnMazeGenerated;
 
             m_GeneratorRoutine = StartCoroutine(m_MazeGenerator.DoAlgorithm());
         }    
-        private void ClearCellMap()
-        {
-            // Setup, clear old data
-            if (m_CellMap != null)
-            {
-                for (int i = 0; i < m_CellMap.GetLength(0); i++)
-                {
-                    for (int j = 0; j < m_CellMap.GetLength(1); j++)
-                    {
-                        // OPTIMIZABLE: Pool this (1)
-                        Destroy(m_CellMap[i, j].gameObject);
-                    }
-                }
-            }
-            m_CellMap = null;
-        }
         private void OnMazeGenerated()
         {
             // Adjust camera size to fit the maze
@@ -198,16 +181,7 @@ namespace BugGame.Maze
             m_CellMap[ranX, ranY].SetPortal(true);
             m_GateCellPos = new Vector2Int(ranX, ranY);
 
-            // Clear hint path
-            ClearHintPath();
-
             MazeGenerated?.Invoke(m_CellMap.GetLength(0), m_CellMap.GetLength(1));
-        }
-        private void Instance_Clear()
-        {
-            if (m_GeneratorRoutine != null) StopCoroutine(m_GeneratorRoutine);
-            ClearCellMap();
-            ClearHintPath();
         }
         #endregion
 
@@ -235,24 +209,57 @@ namespace BugGame.Maze
         private void OnPathGenerated(Vector2Int[] pathCellPositions)
         {
             m_LastSolvePathCellPositions = pathCellPositions;
-            ShowHintPath();
-        }
-        private void ShowHintPath()
-        {
+
+            // Show hint line
             m_LineRenderer.positionCount = m_LastSolvePathCellPositions.Length;
             for (int i = 0; i < m_LastSolvePathCellPositions.Length; i++)
             {
                 m_LineRenderer.SetPosition(i, CellToWorld(m_LastSolvePathCellPositions[i]));
             }
+            
+            PathGenerated?.Invoke(pathCellPositions);
+        }
+        #endregion
+
+        #region Clear Methods
+        private void ClearCellMap()
+        {
+            // Setup, clear old data
+            if (m_CellMap != null)
+            {
+                for (int i = 0; i < m_CellMap.GetLength(0); i++)
+                {
+                    for (int j = 0; j < m_CellMap.GetLength(1); j++)
+                    {
+                        // OPTIMIZABLE: Pool this (1)
+                        Destroy(m_CellMap[i, j].gameObject);
+                    }
+                }
+            }
+            m_CellMap = null;
         }
         private void ClearHintPath()
         {
             m_LastSolvePathCellPositions = null;
             m_LineRenderer.positionCount = 0;
         }
+        private void Instance_Clear()
+        {
+            if (m_GeneratorRoutine != null)
+                StopCoroutine(m_GeneratorRoutine);
+
+            if (m_SolverRoutine != null)
+                StopCoroutine(m_SolverRoutine);
+
+            ClearCellMap();
+            ClearHintPath();
+        }
         #endregion
 
-        #region Cell Manipulating
+        #region Cell Methods
+        /// <summary>
+        /// Invoke cell event as specific cell position`
+        /// </summary>
         private bool Instance_TryInvokeCell(Vector2Int cellPos)
         {
             if (!m_CellMap.IsInBound(cellPos))

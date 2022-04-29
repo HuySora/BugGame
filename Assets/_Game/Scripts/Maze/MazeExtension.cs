@@ -4,51 +4,63 @@ namespace BugGame.Maze
 
     public static class MazeExtension
     { 
-        public static bool IsPassable(this CellTile[,] map, Vector2Int first, Vector2Int second)
+        public static bool IsPassable(this MazeCell[,] map, Vector2Int from, Vector2Int to)
         {
-            // Bound check
-            if (map.IsInBound(first) == false
-            || map.IsInBound(second) == false) return false;
+            // Out of bound
+            if (!map.IsInBound(from) || !map.IsInBound(to))
+                return false;
 
-            // Check if the two cells are the same row or column that's one block away
-            var offset = second - first;
-            if (offset.sqrMagnitude > 1) return false;
+            // Cells are not in the same row or column that's one block away
+            if ((to - from).sqrMagnitude > 1)
+                return false;
 
             // |F|S|
-            if (first.x < second.x)
+            if (from.x < to.x)
             {
                 // Has wall (we don't really need to check both cell since theoretically it's the same wall)
-                if (map[first.x, first.y].WallStates.HasFlag(WallStates.Right)) return false;
-                if (map[second.x, second.y].WallStates.HasFlag(WallStates.Left)) return false;
+                if (map[from.x, from.y].WallStates.HasFlag(WallStates.Right))
+                    return false;
+                
+                if (map[to.x, to.y].WallStates.HasFlag(WallStates.Left))
+                    return false;
 
                 return true;
             }
             // |S|F|
-            else if (first.x > second.x)
+            else if (from.x > to.x)
             {
                 // Has wall (we don't really need to check both cell since theoretically it's the same wall)
-                if (map[first.x, first.y].WallStates.HasFlag(WallStates.Left)) return false;
-                if (map[second.x, second.y].WallStates.HasFlag(WallStates.Right)) return false;
+                if (map[from.x, from.y].WallStates.HasFlag(WallStates.Left))
+                    return false;
+
+                if (map[to.x, to.y].WallStates.HasFlag(WallStates.Right))
+                    return false;
 
                 return true;
             }
             // F
             // S
-            else if (first.y > second.y)
+            else if (from.y > to.y)
             {
                 // Has wall (we don't really need to check both cell since theoretically it's the same wall)
-                if (map[first.x, first.y].WallStates.HasFlag(WallStates.Down)) return false;
-                if (map[second.x, second.y].WallStates.HasFlag(WallStates.Up)) return false;
+                if (map[from.x, from.y].WallStates.HasFlag(WallStates.Down))
+                    return false;
+
+                if (map[to.x, to.y].WallStates.HasFlag(WallStates.Up))
+                    return false;
 
                 return true;
             }
             // S
             // F
-            else if (first.y < second.y)
+            else if (from.y < to.y)
             {
                 // Has wall (we don't really need to check both cell since theoretically it's the same wall)
-                if (map[first.x, first.y].WallStates.HasFlag(WallStates.Up)) return false;
-                if (map[second.x, second.y].WallStates.HasFlag(WallStates.Down)) return false;
+                if (map[from.x, from.y].WallStates.HasFlag(WallStates.Up))
+                    return false;
+
+                if (map[to.x, to.y].WallStates.HasFlag(WallStates.Down))
+                    return false;
 
                 return true;
             }
@@ -56,41 +68,41 @@ namespace BugGame.Maze
             return false;
         }
         
-        public static void RemoveWall(this CellTile[,] map, Vector2Int first, Vector2Int second)
+        public static void RemoveWall(this MazeCell[,] map, Vector2Int from, Vector2Int to)
         {
-            // Bound check
-            if (map.IsInBound(first) == false
-            || map.IsInBound(second) == false) return;
+            // Out of bound
+            if (!map.IsInBound(from) || !map.IsInBound(to))
+                return;
 
-            // Check if the two cells are the same row or column that's one block away
-            var offset = second - first;
-            if (offset.sqrMagnitude > 1) return;
+            // Cells are not in the same row or column that's one block away
+            if ((to - from).sqrMagnitude > 1)
+                return;
 
             // |F|S|
-            if (first.x < second.x)
+            if (from.x < to.x)
             {
-                map[first.x, first.y].UpdateWalls(map[first.x, first.y].WallStates & ~WallStates.Right);
-                map[second.x, second.y].UpdateWalls(map[second.x, second.y].WallStates & ~WallStates.Left);
+                map[from.x, from.y].UpdateWalls(map[from.x, from.y].WallStates & ~WallStates.Right);
+                map[to.x, to.y].UpdateWalls(map[to.x, to.y].WallStates & ~WallStates.Left);
             }
             // |S|F|
-            else if (first.x > second.x)
+            else if (from.x > to.x)
             {
-                map[first.x, first.y].UpdateWalls(map[first.x, first.y].WallStates & ~WallStates.Left);
-                map[second.x, second.y].UpdateWalls(map[second.x, second.y].WallStates & ~WallStates.Right);
+                map[from.x, from.y].UpdateWalls(map[from.x, from.y].WallStates & ~WallStates.Left);
+                map[to.x, to.y].UpdateWalls(map[to.x, to.y].WallStates & ~WallStates.Right);
             }
             // F
             // S
-            else if (first.y > second.y)
+            else if (from.y > to.y)
             {
-                map[first.x, first.y].UpdateWalls(map[first.x, first.y].WallStates & ~WallStates.Down);
-                map[second.x, second.y].UpdateWalls(map[second.x, second.y].WallStates & ~WallStates.Up);
+                map[from.x, from.y].UpdateWalls(map[from.x, from.y].WallStates & ~WallStates.Down);
+                map[to.x, to.y].UpdateWalls(map[to.x, to.y].WallStates & ~WallStates.Up);
             }
             // S
             // F
-            else if (first.y < second.y)
+            else if (from.y < to.y)
             {
-                map[first.x, first.y].UpdateWalls(map[first.x, first.y].WallStates & ~WallStates.Up);
-                map[second.x, second.y].UpdateWalls(map[second.x, second.y].WallStates & ~WallStates.Down);
+                map[from.x, from.y].UpdateWalls(map[from.x, from.y].WallStates & ~WallStates.Up);
+                map[to.x, to.y].UpdateWalls(map[to.x, to.y].WallStates & ~WallStates.Down);
             }
         }
     }

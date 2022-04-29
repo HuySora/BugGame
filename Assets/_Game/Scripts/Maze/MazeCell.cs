@@ -4,7 +4,7 @@ namespace BugGame.Maze
     using System;
     using UnityEngine;
 
-    public class CellTile : MonoBehaviour
+    public class MazeCell : MonoBehaviour
     {
         // OPTIMIZABLE: Maybe spawn portal, wall on runtime
         [Separator("-----Dependencies-----")]

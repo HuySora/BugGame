@@ -7,11 +7,11 @@ namespace BugGame.Maze
     [CreateAssetMenu(fileName = "MG_RecursiveBacktracking", menuName = "MazeGenerator/RecursiveBacktracking")]
     public class RecursiveBacktracking : MazeGenerator
     {
-        private CellTile[,] m_CellMap;
+        private MazeCell[,] m_CellMap;
         private bool[,] m_VisitedMap;
         private System.Random m_Rng;
         
-        public override void Initialize(CellTile[,] map, System.Random rng)
+        public override void Initialize(MazeCell[,] map, System.Random rng)
         {
             m_CellMap = map;
             // bool array to keep track of visited cells
@@ -35,7 +35,6 @@ namespace BugGame.Maze
             {
                 //yield return null;
 
-                OnHeadCellPositionChanged(pos);
                 // Continue to next position as we have no neighbour
                 if (TryGetUnvisitedNeighbours(pos, out List<Vector2Int> unvisitedCellPositions) == false)
                 {
