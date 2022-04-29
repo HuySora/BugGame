@@ -153,7 +153,7 @@ namespace BugGame.Maze
                 }
             }
             m_GeneratorRng = new System.Random(seed);
-            m_MazeGenerator.Initialize(m_CellMap, m_GeneratorRng);
+            m_MazeGenerator.Construct(m_CellMap, m_GeneratorRng);
 
             // Make sure we only subcribe once
             m_MazeGenerator.MazeGenerated -= OnMazeGenerated;
@@ -198,7 +198,7 @@ namespace BugGame.Maze
             m_MazeSolver.PathGenerated -= OnPathGenerated;
             m_MazeSolver.PathGenerated += OnPathGenerated;
 
-            m_MazeSolver.Initialize(m_CellMap, fromCellPos, m_GateCellPos);
+            m_MazeSolver.Construct(m_CellMap, fromCellPos, m_GateCellPos);
 
             // TODO: Currently the coroutine finished instantly so we can safely return instantly, will
             // implementing "async operation handler" later if we have time

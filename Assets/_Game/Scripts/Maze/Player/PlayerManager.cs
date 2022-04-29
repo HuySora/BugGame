@@ -19,6 +19,7 @@ namespace BugGame.Maze
         [SerializeField] private ControllerScheme m_AIControllerScheme;
 
         private PlayerController m_Player;
+        private bool m_IsAI;
 
         public void Instance_Spawn(Vector2Int cellPos)
         {
@@ -27,6 +28,7 @@ namespace BugGame.Maze
 
             var pos = MazeManager.CellToWorld(cellPos);
             m_Player.transform.SetPositionAndRotation(pos, Quaternion.identity);
+            m_Player.ControllerScheme = m_IsAI ? m_AIControllerScheme : m_PlayerControllerScheme;
         }
 
         public void Instance_Despawn()
@@ -35,9 +37,12 @@ namespace BugGame.Maze
                 Destroy(m_Player.gameObject);
         }
 
-        private void Instance_SetAI(bool isAuto)
+        private void Instance_SetAI(bool isAI)
         {
-            m_Player.ControllerScheme = isAuto ? m_AIControllerScheme : m_PlayerControllerScheme;        }
+            m_IsAI = isAI;
+            if (m_Player != null)
+                m_Player.ControllerScheme = isAI ? m_AIControllerScheme : m_PlayerControllerScheme;
+        }
     }
 }
 

@@ -3,35 +3,28 @@ namespace BugGame.Maze
     using MyBox;
     using UnityEngine;
 
-    [CreateAssetMenu(fileName = "AIControllerScheme", menuName = "ControllerScheme/AI")]
     public class AIControllerScheme : ControllerScheme
     {
-        private float m_NextPathTim;
-        private Vector2Int m_DesiredCellPos;
+        private float m_NextPathTime;
+        private Vector2Int? m_DesiredCellPos;
 
         public override bool TryGetDesiredCellPositionFrom(Vector2Int fromCellPos, out Vector2Int desiredCellPos)
         {
-            if (Time.unscaledTime >= m_NextPathTim)
+            if (Time.unscaledTime >= m_NextPathTime)
             {
-                Debug.Log("A");
-
                 MazeManager.TrySolve(fromCellPos);
                 MazeManager.PathGenerated -= OnPathGenerated;
                 MazeManager.PathGenerated += OnPathGenerated;
                 // Hard-coded since this just a "test" game
-                m_NextPathTim = Time.unscaledTime + 0.05f;
+                m_NextPathTime = Time.unscaledTime + 0.04f;
 
                 desiredCellPos = fromCellPos;
                 return false;
             }
 
-            Debug.Log("B");
-
-            if (m_DesiredCellPos != fromCellPos)
+            if (m_DesiredCellPos != fromCellPos && m_DesiredCellPos != null)
             {
-                Debug.Log("C");
-
-                desiredCellPos = m_DesiredCellPos;
+                desiredCellPos = (Vector2Int)m_DesiredCellPos;
                 return true;
             }
             

@@ -8,14 +8,13 @@ namespace BugGame.Maze
     /// <summary>
     /// TODO: Very scuffed A* pathfinding lol.. (tried to use dictionary be like)
     /// </summary>
-    [CreateAssetMenu(fileName = "AStarPathfinding", menuName = "MazeSolver/AStarPathfinding")]
     public class AStarPathfinding : MazeSolver
     {
         private MazeCell[,] m_CellMap;
         private Vector2Int m_FromCellPos;
         private Vector2Int m_ToCellPos;
 
-        public override void Initialize(MazeCell[,] map, Vector2Int fromCellPos, Vector2Int toCellPos)
+        public override void Construct(MazeCell[,] map, Vector2Int fromCellPos, Vector2Int toCellPos)
         {
             m_CellMap = map;
             // bool array to keep track of visited cells

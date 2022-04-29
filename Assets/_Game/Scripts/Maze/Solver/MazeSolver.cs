@@ -4,7 +4,7 @@ namespace BugGame.Maze
     using System.Collections;
     using UnityEngine;
 
-    public abstract class MazeSolver : ScriptableObject
+    public abstract class MazeSolver : MonoBehaviour
     {
         public event Action<Vector2Int[]> PathGenerated;
         protected virtual void OnPathGenerated(Vector2Int[] pathCellPositions)
@@ -12,7 +12,7 @@ namespace BugGame.Maze
             PathGenerated?.Invoke(pathCellPositions);
         }
 
-        public abstract void Initialize(MazeCell[,] map, Vector2Int fromCellPos, Vector2Int toCellPos);
+        public abstract void Construct(MazeCell[,] map, Vector2Int fromCellPos, Vector2Int toCellPos);
         public abstract IEnumerator DoAlgorithm();
     }
 }

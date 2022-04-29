@@ -4,7 +4,7 @@ namespace BugGame.Maze
     using System.Collections;
     using UnityEngine;
 
-    public abstract class MazeGenerator : ScriptableObject
+    public abstract class MazeGenerator : MonoBehaviour
     {
         public event Action<Vector2Int, Vector2Int> CellPairModified;
         protected virtual void OnCellPairModified(Vector2Int prevPos, Vector2Int newPos)
@@ -18,7 +18,7 @@ namespace BugGame.Maze
             MazeGenerated?.Invoke();
         }
         
-        public abstract void Initialize(MazeCell[,] map, System.Random rng);
+        public abstract void Construct(MazeCell[,] map, System.Random rng);
         public abstract IEnumerator DoAlgorithm();
     }
 }

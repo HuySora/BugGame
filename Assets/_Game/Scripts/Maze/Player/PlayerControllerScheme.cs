@@ -3,7 +3,6 @@ namespace BugGame.Maze
     using MyBox;
     using UnityEngine;
 
-    [CreateAssetMenu(fileName = "PlayerControllerScheme", menuName = "ControllerScheme/Player")]
     public partial class PlayerControllerScheme : ControllerScheme
     {
         public override bool TryGetDesiredCellPositionFrom(Vector2Int fromCellPos, out Vector2Int desiredCellPos)
